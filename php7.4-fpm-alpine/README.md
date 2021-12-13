@@ -1,4 +1,4 @@
-This base image is based on `php:8.0-fpm-alpine`.
+This base image is based on `php:7.4-fpm-alpine`.
 
 # Configuration
 - Local time and time zone is set to `Europe/Amsterdam`
@@ -12,3 +12,8 @@ This base image is based on `php:8.0-fpm-alpine`.
 - pdo_mysql
 - exif
 - gd
+- bcmath
+- intl
+- zip
+- soap
+- redis
