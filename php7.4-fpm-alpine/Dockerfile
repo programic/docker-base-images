@@ -1,6 +1,6 @@
 FROM php:7.4-fpm-alpine
 
-RUN apk add --no-cache bash sudo imagemagick \
+RUN apk add --no-cache bash imagemagick \
     && apk add --no-cache --virtual .build-deps ${PHPIZE_DEPS} tzdata imagemagick-dev icu-dev libzip-dev libxml2-dev freetype-dev libjpeg-turbo-dev libpng-dev libwebp-dev \
     # Change localtime and timezone
     && cp /usr/share/zoneinfo/Europe/Amsterdam /etc/localtime \
