@@ -8,8 +8,8 @@ RUN apk add --no-cache bash imagemagick \
     # Install composer
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
     # Install the imagick php extension via pecl
-    && pecl install imagick \
-    && docker-php-ext-enable imagick \
+    && pecl install imagick redis \
+    && docker-php-ext-enable imagick redis \
     # Config gd
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     # Install php extensions. Speedup by using -j
