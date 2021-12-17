@@ -6,7 +6,6 @@ This base image is based on `php:8.0-fpm-alpine`.
 
 # Extra installed packages and extensions
 - bash
-- sudo
 - composer
 - imagick
 - pdo_mysql
