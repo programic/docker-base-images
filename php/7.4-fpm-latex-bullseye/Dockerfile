@@ -11,7 +11,8 @@ RUN apt-get update \
     # Cleanup
     && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update \
+RUN saved_apt_mark="$(apt-mark showmanual)" \
+    && apt-get update \
     && apt-get install -y --no-install-recommends \
     libzip-dev libfreetype6-dev libmagickwand-dev libjpeg-dev libpng-dev libwebp-dev libpspell-dev \
     # Config timezone
@@ -29,6 +30,11 @@ RUN apt-get update \
     # Install php extensions. Speedup by using -j
     && docker-php-ext-install -j$(nproc) pdo_mysql exif gd bcmath intl zip soap \
     # Cleanup
+    && ext_dir="$(php -r 'echo ini_get("extension_dir");')" \
+    && apt-mark auto '.*' > /dev/null \
+    && apt-mark manual ${saved_apt_mark} \
+    && ldd "${ext_dir}"/*.so | awk '/=>/ { print $3 }' | sort -u | xargs -r dpkg-query -S | cut -d: -f1 | sort -u | xargs -rt apt-mark manual \
+    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
     && rm -rf /var/lib/apt/lists/* \
     && rm -r /tmp/pear
 
