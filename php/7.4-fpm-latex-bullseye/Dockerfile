@@ -1,5 +1,9 @@
 FROM php:7.4-fpm-bullseye
 
+##################
+## Inspiration from: https://github.com/docker-library/wordpress/blob/master/latest/php8.0/fpm/Dockerfile
+##################
+
 # Persistent dependencies
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
