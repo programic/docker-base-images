@@ -11,8 +11,7 @@ RUN apt-get update \
     # Cleanup
     && rm -rf /var/lib/apt/lists/*
 
-RUN savedAptMark="$(apt-mark showmanual)" \
-    && apt-get update \
+RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     libzip-dev libfreetype6-dev libmagickwand-dev libjpeg-dev libpng-dev libwebp-dev libpspell-dev \
     # Config timezone
@@ -29,11 +28,7 @@ RUN savedAptMark="$(apt-mark showmanual)" \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     # Install php extensions. Speedup by using -j
     && docker-php-ext-install -j$(nproc) pdo_mysql exif gd bcmath intl zip soap \
-    # Reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
-    && apt-mark auto '.*' > /dev/null \
-    && apt-mark manual $savedAptMark \
-    && ldd "$extDir"/*.so | awk '/=>/ { print $3 }' | sort -u | xargs -r dpkg-query -S | cut -d: -f1 | sort -u | xargs -rt apt-mark manual \
-    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+    # Cleanup
     && rm -rf /var/lib/apt/lists/* \
     && rm -r /tmp/pear
 
