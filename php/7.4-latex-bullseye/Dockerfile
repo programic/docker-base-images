@@ -1,4 +1,5 @@
-FROM php:7.4-fpm-bullseye
+ARG type=fpm
+FROM php:7.4-${type}-bullseye
 
 # Persistent dependencies
 RUN apt-get update \

@@ -1,4 +1,4 @@
-This base image is based on `php:7.4-fpm-alpine`.
+This base image is based on `php:7.4-*-bullseye`.
 
 # Configuration
 - Local time and time zone is set to `Europe/Amsterdam`
