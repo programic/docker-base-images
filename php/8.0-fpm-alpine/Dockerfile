@@ -1,5 +1,16 @@
 FROM php:8.0-fpm-alpine
 
+ENV MUSL_DEPS cmake make musl-dev gcc gettext-dev libintl
+ENV MUSL_LOCPATH /usr/share/i18n/locales/musl
+
+# Installing locals, tutorials: https://grrr.tech/posts/2020/add-locales-to-alpine-linux-docker-image/
+RUN apk add --no-cache --virtual .build-musl ${MUSL_DEPS} \
+    && wget https://gitlab.com/rilian-la-te/musl-locales/-/archive/master/musl-locales-master.zip \
+    && unzip musl-locales-master.zip \
+    && (cd musl-locales-master && cmake -DLOCALE_PROFILE=OFF -D CMAKE_INSTALL_PREFIX:PATH=/usr . && make && make install) \
+    && apk del .build-musl \
+    && rm -r musl-locales-master
+
 RUN apk add --no-cache bash imagemagick \
     && apk add --no-cache --virtual .build-deps ${PHPIZE_DEPS} tzdata imagemagick-dev freetype-dev libjpeg-turbo-dev libpng-dev libwebp-dev \
     # Change localtime and timezone
