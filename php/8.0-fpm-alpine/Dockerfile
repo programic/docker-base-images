@@ -1,6 +1,7 @@
 FROM php:8.0-fpm-alpine
 
 ENV MUSL_LOCPATH /usr/share/i18n/locales/musl
+ENV PHP_OPCACHE_VALIDATE_TIMESTAMPS 0
 
 # Installing locals, tutorial: https://grrr.tech/posts/2020/add-locales-to-alpine-linux-docker-image/
 RUN apk add --no-cache --virtual .build-musl cmake make musl-dev gcc gettext-dev libintl \
@@ -23,7 +24,7 @@ RUN apk add --no-cache bash imagemagick \
     # Config gd
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     # Install php extensions. Speedup by using -j
-    && docker-php-ext-install -j$(nproc) pdo_mysql exif gd \
+    && docker-php-ext-install -j$(nproc) pdo_mysql exif gd opcache \
     # Install runtime dependencies
     && runtime_deps="$(scanelf --needed --nobanner --recursive /usr/local | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' | sort -u | xargs -r apk info --installed | sort -u)" \
     && apk add --no-cache --virtual .runtime-deps ${runtime_deps} \
