@@ -27,3 +27,4 @@ This base image is based on `php:8.1-fpm-alpine`.
 - pdo_mysql
 - exif
 - gd
+- soap
