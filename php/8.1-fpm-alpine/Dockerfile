@@ -3,6 +3,7 @@ FROM php:8.1-fpm-alpine
 ENV MUSL_LOCPATH /usr/share/i18n/locales/musl
 ENV PHP_OPCACHE_VALIDATE_TIMESTAMPS 0
 ENV PHP_MEMORY_LIMIT 512M
+ENV COMPOSER_ALLOW_SUPERUSER 1
 
 # Installing locals, tutorial: https://grrr.tech/posts/2020/add-locales-to-alpine-linux-docker-image/
 RUN apk add --no-cache --virtual .build-musl cmake make musl-dev gcc gettext-dev libintl \
