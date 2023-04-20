@@ -1,0 +1,3 @@
+[mysqld]
+sql_require_primary_key=ON
+default_authentication_plugin=mysql_native_password

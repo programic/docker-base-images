@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
 
 docker login
-docker build -t programic/mysql:8.0 .
-docker push programic/mysql:8.0
+docker buildx build --push --platform linux/arm64/v8,linux/amd64 --tag programic/mysql:8.0 .
