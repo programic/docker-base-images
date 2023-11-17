@@ -25,8 +25,10 @@ RUN apk add --no-cache bash imagemagick mysql-client \
     && docker-php-ext-enable imagick redis \
     # Config gd
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    # Config pcntl
+    && docker-php-ext-configure pcntl --enable-pcntl \
     # Install php extensions. Speedup by using -j
-    && docker-php-ext-install -j$(nproc) pdo_mysql exif gd zip opcache soap \
+    && docker-php-ext-install -j$(nproc) pdo_mysql exif gd zip opcache soap pcntl \
     # Install runtime dependencies
     && runtime_deps="$(scanelf --needed --nobanner --recursive /usr/local | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' | sort -u | xargs -r apk info --installed | sort -u)" \
     && apk add --no-cache --virtual .runtime-deps ${runtime_deps} \

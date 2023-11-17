@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 docker login
-docker build --platform linux/amd64 -t programic/php:8.2-fpm-alpine .
-docker push programic/php:8.2-fpm-alpine
+docker buildx create --name docker-multiplatform --bootstrap --use
+docker buildx build --push --platform linux/amd64,linux/arm64,linux/arm/v8 -t programic/php:8.2-fpm-alpine .
