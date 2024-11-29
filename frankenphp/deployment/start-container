@@ -1,0 +1,54 @@
+#!/usr/bin/env sh
+set -e
+
+container_mode=${CONTAINER_MODE:-"http"}
+octane_server=${OCTANE_SERVER}
+local_dev=${LOCAL_DEV:-"false"}
+app_env=${APP_ENV:-"production"}
+
+echo "Container mode: $container_mode"
+
+initialStuff() {
+    php artisan storage:link; \
+    php artisan event:cache; \
+    php artisan config:cache; \
+    php artisan route:cache;
+}
+
+if [ "$1" != "" ]; then
+    exec "$@"
+elif [ "${container_mode}" = "http" ]; then
+    echo "Octane Server: $octane_server"
+
+    if [ "${local_dev}" = "true" ]; then
+        mkdir -p node_modules
+
+        if [ ! -d "./node_modules/chokidar" ]; then ln -srf /usr/local/lib/node_modules/chokidar ./node_modules/; fi
+        if [ ! -d "./node_modules/corepack" ]; then ln -srf /usr/local/lib/node_modules/corepack ./node_modules/; fi
+
+        if [ ! -d "./vendor" ]; then
+            echo "Installing Composer dependencies..."
+            composer install --no-interaction --no-progress --no-suggest
+        fi
+
+        initialStuff
+
+        exec bash -c "frankenphp php-cli artisan kubernetes:start || tail -f /dev/null"
+    else
+        initialStuff
+
+        exec frankenphp php-cli artisan kubernetes:start
+    fi
+elif [ "${container_mode}" = "horizon" ]; then
+    initialStuff
+    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.horizon.conf
+elif [ "${container_mode}" = "scheduler" ]; then
+    initialStuff
+    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.scheduler.conf
+elif [ "${container_mode}" = "worker" ]; then
+    initialStuff
+    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.worker.conf
+else
+    echo "Container mode mismatched."
+    exit 1
+fi

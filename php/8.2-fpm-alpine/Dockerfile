@@ -14,7 +14,7 @@ RUN apk add --no-cache --virtual .build-musl cmake make musl-dev gcc gettext-dev
     && rm -r musl-locales-master
 
 RUN apk add --no-cache bash imagemagick mysql-client \
-    && apk add --no-cache --virtual .build-deps ${PHPIZE_DEPS} tzdata imagemagick-dev libzip-dev freetype-dev libjpeg-turbo-dev libpng-dev libwebp-dev libxml2-dev linux-headers \
+    && apk add --no-cache --virtual .build-deps ${PHPIZE_DEPS} tzdata imagemagick-dev libzip-dev freetype-dev libjpeg-turbo-dev libpng-dev libwebp-dev libxml2-dev linux-headers icu-dev \
     # Change localtime and timezone
     && cp /usr/share/zoneinfo/Europe/Amsterdam /etc/localtime \
     && echo "Europe/Amsterdam" > /etc/timezone \
@@ -28,7 +28,7 @@ RUN apk add --no-cache bash imagemagick mysql-client \
     # Config pcntl
     && docker-php-ext-configure pcntl --enable-pcntl \
     # Install php extensions. Speedup by using -j
-    && docker-php-ext-install -j$(nproc) pdo_mysql exif gd zip opcache soap pcntl sockets \
+    && docker-php-ext-install -j$(nproc) pdo_mysql exif gd zip opcache soap intl pcntl sockets \
     # Install runtime dependencies
     && runtime_deps="$(scanelf --needed --nobanner --recursive /usr/local | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' | sort -u | xargs -r apk info --installed | sort -u)" \
     && apk add --no-cache --virtual .runtime-deps ${runtime_deps} \
