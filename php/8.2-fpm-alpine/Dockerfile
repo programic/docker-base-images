@@ -13,7 +13,7 @@ RUN apk add --no-cache --virtual .build-musl cmake make musl-dev gcc gettext-dev
     && apk del .build-musl \
     && rm -r musl-locales-master
 
-RUN apk add --no-cache bash imagemagick mysql-client \
+RUN apk add --no-cache bash imagemagick mysql-client git \
     && apk add --no-cache --virtual .build-deps ${PHPIZE_DEPS} tzdata imagemagick-dev libzip-dev freetype-dev libjpeg-turbo-dev libpng-dev libwebp-dev libxml2-dev linux-headers icu-dev \
     # Change localtime and timezone
     && cp /usr/share/zoneinfo/Europe/Amsterdam /etc/localtime \

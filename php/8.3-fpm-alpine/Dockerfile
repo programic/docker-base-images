@@ -13,16 +13,21 @@ RUN apk add --no-cache --virtual .build-musl cmake make musl-dev gcc gettext-dev
     && apk del .build-musl \
     && rm -r musl-locales-master
 
-RUN apk add --no-cache bash imagemagick mysql-client \
-    && apk add --no-cache --virtual .build-deps ${PHPIZE_DEPS} tzdata imagemagick-dev libzip-dev freetype-dev libjpeg-turbo-dev libpng-dev libwebp-dev libxml2-dev linux-headers icu-dev \
+RUN apk add --no-cache bash git freetype libpng libjpeg-turbo libzip-dev ghostscript imagemagick jpegoptim optipng pngquant gifsicle libldap libpq less mysql-client \
+    && apk add --no-cache --virtual .build-deps ${PHPIZE_DEPS} autoconf gcc g++ imagemagick-dev libtool make tzdata imagemagick-dev libzip-dev freetype-dev libjpeg-turbo-dev libpng-dev libwebp-dev libxml2-dev linux-headers icu-dev \
     # Change localtime and timezone
     && cp /usr/share/zoneinfo/Europe/Amsterdam /etc/localtime \
     && echo "Europe/Amsterdam" > /etc/timezone \
     # Install composer
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
-    # Install the imagick php extension via pecl
-    && pecl install imagick redis \
-    && docker-php-ext-enable imagick redis \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    # Install the imagick php extension via make \
+    && git clone https://github.com/Imagick/imagick.git --depth 1 /tmp/imagick && cd /tmp/imagick && git fetch origin master && git switch master && cd /tmp/imagick \
+    && phpize \
+    && ./configure \
+    && make && make install \
+    && docker-php-ext-enable imagick \
     # Config gd
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     # Config pcntl
@@ -34,6 +39,6 @@ RUN apk add --no-cache bash imagemagick mysql-client \
     && apk add --no-cache --virtual .runtime-deps ${runtime_deps} \
     # Cleanup build dependencies
     && apk del .build-deps \
-    && rm -r /tmp/*
+    && rm -rf /tmp/*
 
 COPY php-tweaks.ini /usr/local/etc/php/conf.d/
